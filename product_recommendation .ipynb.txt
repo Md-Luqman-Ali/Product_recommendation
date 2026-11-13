@@ -2446,20 +2446,7 @@
   {
    "cell_type": "code",
    "source": [
-    "def get_similar_products(product_id, N=5):\n",
-    "    # data_matrix is fitted on train_df; use the same row space for lookup.\n",
-    "    matches = train_df.index[train_df[\"ProductId\"].astype(str) == str(product_id)]\n",
-    "    if len(matches) == 0:\n",
-    "        raise ValueError(f\"ProductId {product_id!r} is not present in the training set.\")\n",
-    "    if N < 1:\n",
-    "        raise ValueError(\"N must be at least 1.\")\n",
-    "    matrix_row = train_df.index.get_loc(matches[0])\n",
-    "    count = min(N + 1, data_matrix.shape[0])\n",
-    "    distances, indices = model.kneighbors(data_matrix[matrix_row], n_neighbors=count)\n",
-    "    product_indices = indices[0][1:]\n",
-    "    result = train_df.iloc[product_indices].copy()\n",
-    "    result[\"similarity\"] = 1 - distances[0][1:]\n",
-    "    return result"
+    "def get_similar_products(product_id, N=5):\n    \"\"\"Return up to N similar training products, excluding the source row.\"\"\"\n    if N < 1:\n        raise ValueError(\"N must be at least 1.\")\n\n    matches = train_df.index[\n        train_df[\"ProductId\"].astype(str) == str(product_id)\n    ]\n    if len(matches) == 0:\n        raise ValueError(\n            f\"ProductId {product_id!r} is not present in the training set.\"\n        )\n\n    source_index = matches[0]\n    source_position = train_df.index.get_loc(source_index)\n    count = min(N + 1, data_matrix.shape[0])\n    distances, indices = model.kneighbors(\n        data_matrix[source_position], n_neighbors=count\n    )\n\n    recommendations = [\n        (idx, distance)\n        for idx, distance in zip(indices[0], distances[0])\n        if train_df.index[idx] != source_index\n    ][:N]\n\n    result = train_df.iloc[[idx for idx, _ in recommendations]].copy()\n    result[\"similarity\"] = [1 - distance for _, distance in recommendations]\n    return result"
    ],
    "metadata": {
     "id": "ckQhud8jzzYb"
