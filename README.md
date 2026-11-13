@@ -1,10 +1,36 @@
 # Product Recommendation System
 
-Content-based recommendations from product review text using TF-IDF and cosine nearest-neighbour search.
+A content-based recommendation notebook that represents product review text with TF-IDF and retrieves similar items using cosine similarity.
 
 ## Dataset
-`product reviews.csv` contains product IDs, review summaries, and review text.
 
-The notebook's recommendation lookup now uses row positions from the same training subset used to fit its TF-IDF matrix, preventing the previous full-data/train-matrix index mismatch.
+The notebook expects `product reviews.csv` in the repository root. It uses product identifiers, review summaries, and review text. Preserve the source column names and filename when running the notebook.
 
-This is content-based recommendation, not collaborative filtering; it does not model user purchase histories or preferences.
+## Run the notebook
+
+```bash
+python -m venv .venv
+# Windows PowerShell: .venv\\Scripts\\Activate.ps1
+# Windows cmd: .venv\\Scripts\\activate.bat
+# macOS/Linux: source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+jupyter notebook
+```
+
+Open `product_recommendation.ipynb` and execute the cells in order. The recommendation lookup maps positions from the same training subset used to fit the TF-IDF matrix.
+
+## How it works
+
+1. Prepare and combine the available review text.
+2. Convert text into TF-IDF vectors.
+3. Compute nearest neighbours using cosine similarity.
+4. Return products with similar review content.
+
+## Limitations
+
+This is content-based retrieval, not collaborative filtering. It does not learn user-specific preferences, purchase histories, or product availability. Similar review language does not guarantee equivalent product quality.
+
+## Stack
+
+Python · Pandas · scikit-learn · TF-IDF · Cosine similarity · Jupyter
